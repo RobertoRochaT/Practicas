@@ -51,9 +51,9 @@ fun PantallaPrincipal(name: String, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center){
         Text(
-            text = "Carlos Roberto Rocha Trejo",
-            color = Color.Black,
-            fontSize = 24.sp,
+            text = "22130517 Carlos Roberto Rocha Trejo",
+            color = Color.Red,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
@@ -62,7 +62,7 @@ fun PantallaPrincipal(name: String, modifier: Modifier = Modifier) {
         Button(
             onClick = { /* TODO */ },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
+                containerColor = Color.Blue,
                 contentColor = Color.White
             ),
             modifier = Modifier
