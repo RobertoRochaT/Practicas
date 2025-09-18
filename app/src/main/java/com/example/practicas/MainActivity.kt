@@ -1,48 +1,34 @@
+package com.example.practicas
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practicas.ui.theme.PracticasTheme
@@ -53,313 +39,165 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PracticasTheme {
-                MainScreen()
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Inicio()
+
+                }
+
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    var pantalla by remember { mutableStateOf("0") }
-    var operacionActual by remember { mutableStateOf("") }
-    val historialOperaciones = remember { mutableStateListOf<String>() }
-    var primerNumero by remember { mutableStateOf<Double?>(null) }
-    var operacion by remember { mutableStateOf<String?>(null) }
-    var operadorPresionado by remember { mutableStateOf(false) }
-    var mostrarHistorial by remember { mutableStateOf(false) }
+fun Inicio() {
+    var isr by remember { mutableStateOf("") }
+    var salarioBruto by remember { mutableStateOf("") }
+    var resultado by remember { mutableStateOf("") }
 
-    fun limpiar() {
-        pantalla = "0"
-        operacionActual = ""
-        primerNumero = null
-        operacion = null
-    }
-
-    fun limpiarTodo() {
-        limpiar()
-        historialOperaciones.clear()
-    }
-
-    fun borrarUltimo() {
-        pantalla = if (pantalla.length > 1) {
-            pantalla.dropLast(1)
-        } else "0"
-    }
-
-    fun agregarNumero(num: String) {
-        pantalla = if (pantalla == "0" || operadorPresionado) {
-            num
-        } else {
-            pantalla + num
-        }
-        operadorPresionado = false
-    }
-
-    fun agregarDecimal() {
-        if (!pantalla.contains(".")) pantalla += "."
-    }
-
-    fun elegirOperacion(op: String) {
-        val numero = pantalla.toDoubleOrNull() ?: return
-        if (primerNumero == null) {
-            primerNumero = numero
-            operacionActual = "${formatearResultado(numero)} $op"
-        } else if (operacion != null) {
-            primerNumero = calcular(primerNumero!!, numero, operacion!!)
-            pantalla = formatearResultado(primerNumero!!)
-            operacionActual = "${formatearResultado(primerNumero!!)} $op"
-        }
-        operacion = op
-        operadorPresionado = true
-    }
-
-    fun calcularResultado() {
-        val segundoNumero = pantalla.toDoubleOrNull() ?: return
-        if (primerNumero != null && operacion != null) {
-            val resultado = calcular(primerNumero!!, segundoNumero, operacion!!)
-            val operacionCompleta = "$operacionActual ${formatearResultado(segundoNumero)} = ${formatearResultado(resultado)}"
-            historialOperaciones.add(0, operacionCompleta)
-            pantalla = if (resultado.isNaN()) "Error" else formatearResultado(resultado)
-            primerNumero = null
-            operacion = null
-            operacionActual = ""
-        }
-    }
-
-
-    // Interfaz moderna con degradados
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF667eea),
-                        Color(0xFF764ba2)
-                    )
-                )
-            )
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.padding(70.dp))
+        Row(){
+            Image(painter = painterResource(id=R.drawable.money),
+                contentDescription = null)
+        }
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Sección superior - Pantalla y historial
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f)
-                    .shadow(8.dp, RoundedCornerShape(24.dp)),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    // Botón para mostrar/ocultar historial
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Calculadora Pro",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF667eea)
-                        )
-                        Surface(
-                            modifier = Modifier
-                                .clickable { mostrarHistorial = !mostrarHistorial }
-                                .clip(CircleShape),
-                            color = Color(0xFF667eea).copy(alpha = 0.2f)
-                        ) {
-                            Text(
-                                text = if (mostrarHistorial) "🧮" else "📝",
-                                modifier = Modifier.padding(8.dp),
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
+            modifier = Modifier.padding(10.dp, 40.dp, 0.dp, 30.dp)
 
-                    if (mostrarHistorial && historialOperaciones.isNotEmpty()) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .padding(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            items(historialOperaciones.take(3)) { operacion ->
-                                Text(
-                                    text = operacion,
-                                    fontSize = 14.sp,
-                                    color = Color.Gray,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Operación actual
-                    Text(
-                        text = operacionActual,
-                        fontSize = 20.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End
-                    )
-
-                    // Resultado principal
-                    Text(
-                        text = pantalla,
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2D3748),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.End
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Sección de botones
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.6f)
-                    .shadow(8.dp, RoundedCornerShape(24.dp)),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    val botones = listOf(
-                        listOf("AC", "C", "⌫", "/"),
-                        listOf("7", "8", "9", "*"),
-                        listOf("4", "5", "6", "-"),
-                        listOf("1", "2", "3", "+"),
-                        listOf("00", "0", ".", "=")
-                    )
-
-                    botones.forEach { fila ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            fila.forEach { texto ->
-                                ModernButton(
-                                    text = texto,
-                                    onClick = {
-                                        when (texto) {
-                                            in "0".."9" -> agregarNumero(texto)
-                                            "00" -> {
-                                                agregarNumero("0")
-                                                agregarNumero("0")
-                                            }
-                                            "." -> agregarDecimal()
-                                            "C" -> limpiar()
-                                            "AC" -> limpiarTodo()
-                                            "⌫" -> borrarUltimo()
-                                            "+", "-", "*", "/" -> elegirOperacion(texto)
-                                            "=" -> calcularResultado()
-                                        }
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ModernButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = tween(100)
-    )
-
-    val buttonColor = when {
-        text in listOf("=") -> Color(0xFF48bb78)
-        text in listOf("+", "-", "*", "/") -> Color(0xFFed8936)
-        text in listOf("C", "AC", "⌫") -> Color(0xFFf56565)
-        else -> Color(0xFF4a5568)
-    }
-
-    val animatedColor by animateColorAsState(
-        targetValue = if (isPressed) buttonColor.copy(alpha = 0.8f) else buttonColor,
-        animationSpec = tween(100)
-    )
-
-    Surface(
-        modifier = modifier
-            .size(70.dp)
-            .scale(scale)
-            .shadow(
-                elevation = if (isPressed) 2.dp else 6.dp,
-                shape = CircleShape
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                isPressed = true
-                onClick()
-                isPressed = false
-            },
-        shape = CircleShape,
-        color = animatedColor
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = text,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
+                text = "CALCULO DEL ISR",
+                fontSize = 40.sp,
+                )
+        }
+
+
+        Row(modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 30.dp)) {
+            TextField(
+                value = salarioBruto, onValueChange = { salarioBruto = it },
+                placeholder = { Text(text = "Ingresa tu sueldo quincenal") }
             )
         }
-    }
-}
-}
 
-//Calculadora
-fun calcular(a: Double, b: Double, op: String): Double {
-    return when (op) {
-        "+" -> a + b
-        "-" -> a - b
-        "*" -> a * b
-        "/" -> if (b == 0.0) Double.NaN else a / b
-        else -> b
-    }
-}
+        Row(modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 20.dp)) {
+            Button(
+                onClick = {
+                    val salBruto = salarioBruto.toDouble()
+                    var isr1: Double = 0.0
+                    var res = 0.0
+                    var lInferior: Double = 0.0
+                    var porcentaje: Double = 0.0
+                    var cuota: Double = 0.0
 
-fun formatearResultado(num: Double): String {
-    return if (num % 1 == 0.0) num.toInt().toString() else num.toString()
+                    when (salBruto) {
+                        in 0.01..368.10 -> {
+                            lInferior = 0.01
+                            porcentaje = 1.92
+                            cuota = 0.00
+                        }
+                        in 368.11..3124.35 -> {
+                            lInferior = 368.11
+                            porcentaje = 6.40
+                            cuota = 7.05
+                        }
+                        in 3124.36..5490.75 -> {
+                            lInferior = 3124.36
+                            porcentaje = 10.88
+                            cuota = 183.45
+                        }
+                        in 5490.76..6382.80 -> {
+                            lInferior = 5490.76
+                            porcentaje = 16.00
+                            cuota = 441.00
+                        }
+                        in 6382.81..7641.90 -> {
+                            lInferior = 6382.81
+                            porcentaje = 17.92
+                            cuota = 583.65
+                        }
+                        in 7641.91..15412.80 -> {
+                            lInferior = 7641.91
+                            porcentaje = 21.36
+                            cuota = 809.25
+                        }
+                        in 15412.81..24292.65 -> {
+                            lInferior = 15412.81
+                            porcentaje = 23.52
+                            cuota = 2469.15
+                        }
+                        in 24292.66..46378.50 -> {
+                            lInferior = 24292.66
+                            porcentaje = 30.00
+                            cuota = 4557.75
+                        }
+                        in 46378.51..61838.10 -> {
+                            lInferior = 46378.51
+                            porcentaje = 32.00
+                            cuota = 11183.40
+                        }
+                        in 61838.11..185514.30 -> {
+                            lInferior = 61838.11
+                            porcentaje = 34.00
+                            cuota = 16130.55
+                        }
+                        in 185514.31..250000.00 -> {
+                            lInferior = 185514.31
+                            porcentaje = 35.00
+                            cuota = 58180.35
+                        }
+                    }
+
+                    isr1 = ((salBruto - lInferior) * (porcentaje / 100)) + cuota
+                    res = salBruto - isr1
+                    isr = isr1.toString()
+                    resultado = res.toString()
+
+                },
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+            )
+            ) {
+                Text(text = "CALCULAR")
+            }
+        }
+
+        Row(modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 30.dp)) {
+            Text(
+                text = " ISR:   ",
+                fontSize = 25.sp,
+            )
+            TextField(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(60.dp),
+                value = isr, onValueChange = { nuevoTexto ->
+                    isr = nuevoTexto
+                }
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(
+                    Alignment.CenterHorizontally
+                )
+        ) {
+            OutlinedTextField(
+                value = resultado,
+                label = { Text("Sueldo Neto") },
+                onValueChange = { resultado = it }
+            )
+        }
+
+
+    }
+
 }
