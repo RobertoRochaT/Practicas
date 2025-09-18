@@ -1,3 +1,5 @@
+package com.example.practicas
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,8 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practicas.ui.theme.PracticasTheme
+import androidx.compose.foundation.layout.aspectRatio
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,19 +63,20 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    var pantalla by remember { mutableStateOf("0") }
-    var operacionActual by remember { mutableStateOf("") }
+    var pantalla by rememberSaveable { mutableStateOf("0") }
+    var operacionActual by rememberSaveable { mutableStateOf("") }
     val historialOperaciones = remember { mutableStateListOf<String>() }
-    var primerNumero by remember { mutableStateOf<Double?>(null) }
-    var operacion by remember { mutableStateOf<String?>(null) }
-    var operadorPresionado by remember { mutableStateOf(false) }
-    var mostrarHistorial by remember { mutableStateOf(false) }
+    var primerNumero by rememberSaveable { mutableStateOf<Double?>(null) }
+    var operacion by rememberSaveable { mutableStateOf<String?>(null) }
+    var operadorPresionado by rememberSaveable { mutableStateOf(false) }
+    var mostrarHistorial by rememberSaveable { mutableStateOf(false) }
 
     fun limpiar() {
         pantalla = "0"
         operacionActual = ""
         primerNumero = null
         operacion = null
+        operadorPresionado = false
     }
 
     fun limpiarTodo() {
@@ -82,9 +85,7 @@ fun MainScreen() {
     }
 
     fun borrarUltimo() {
-        pantalla = if (pantalla.length > 1) {
-            pantalla.dropLast(1)
-        } else "0"
+        pantalla = if (pantalla.length > 1) pantalla.dropLast(1) else "0"
     }
 
     fun agregarNumero(num: String) {
@@ -118,15 +119,19 @@ fun MainScreen() {
         val segundoNumero = pantalla.toDoubleOrNull() ?: return
         if (primerNumero != null && operacion != null) {
             val resultado = calcular(primerNumero!!, segundoNumero, operacion!!)
-            val operacionCompleta = "$operacionActual ${formatearResultado(segundoNumero)} = ${formatearResultado(resultado)}"
-            historialOperaciones.add(0, operacionCompleta)
-            pantalla = if (resultado.isNaN()) "Error" else formatearResultado(resultado)
+            if (resultado.isNaN()) {
+                pantalla = "Error"
+            } else {
+                val opCompleta =
+                    "$operacionActual ${formatearResultado(segundoNumero)} = ${formatearResultado(resultado)}"
+                historialOperaciones.add(0, opCompleta)
+                pantalla = formatearResultado(resultado)
+            }
             primerNumero = null
             operacion = null
             operacionActual = ""
         }
     }
-
 
     // Interfaz moderna con degradados
     Box(
@@ -162,7 +167,6 @@ fun MainScreen() {
                         .padding(20.dp),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // Botón para mostrar/ocultar historial
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -172,13 +176,15 @@ fun MainScreen() {
                             text = "Calculadora Pro",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF667eea)
+                            color = Color(0xFF667eea),
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Surface(
                             modifier = Modifier
-                                .clickable { mostrarHistorial = !mostrarHistorial }
-                                .clip(CircleShape),
-                            color = Color(0xFF667eea).copy(alpha = 0.2f)
+                                .clip(CircleShape)
+                                .clickable { mostrarHistorial = !mostrarHistorial },
+                            color = Color(0xFF667eea).copy(alpha = 0.2f),
+                            shape = CircleShape
                         ) {
                             Text(
                                 text = if (mostrarHistorial) "🧮" else "📝",
@@ -196,9 +202,9 @@ fun MainScreen() {
                                 .padding(vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            items(historialOperaciones.take(3)) { operacion ->
+                            items(historialOperaciones.take(3)) { opTxt ->
                                 Text(
-                                    text = operacion,
+                                    text = opTxt,
                                     fontSize = 14.sp,
                                     color = Color.Gray,
                                     modifier = Modifier.fillMaxWidth(),
@@ -265,18 +271,20 @@ fun MainScreen() {
                                 ModernButton(
                                     text = texto,
                                     onClick = {
-                                        when (texto) {
-                                            in "0".."9" -> agregarNumero(texto)
-                                            "00" -> {
+                                        when {
+                                            texto.length == 1 && texto[0].isDigit() -> agregarNumero(texto)
+
+                                            texto == "00" -> {
                                                 agregarNumero("0")
                                                 agregarNumero("0")
                                             }
-                                            "." -> agregarDecimal()
-                                            "C" -> limpiar()
-                                            "AC" -> limpiarTodo()
-                                            "⌫" -> borrarUltimo()
-                                            "+", "-", "*", "/" -> elegirOperacion(texto)
-                                            "=" -> calcularResultado()
+
+                                            texto == "." -> agregarDecimal()
+                                            texto == "C" -> limpiar()
+                                            texto == "AC" -> limpiarTodo()
+                                            texto == "⌫" -> borrarUltimo()
+                                            texto in listOf("+", "-", "*", "/") -> elegirOperacion(texto)
+                                            texto == "=" -> calcularResultado()
                                         }
                                     },
                                     modifier = Modifier.weight(1f)
@@ -303,7 +311,7 @@ fun ModernButton(
     )
 
     val buttonColor = when {
-        text in listOf("=") -> Color(0xFF48bb78)
+        text == "=" -> Color(0xFF48bb78)
         text in listOf("+", "-", "*", "/") -> Color(0xFFed8936)
         text in listOf("C", "AC", "⌫") -> Color(0xFFf56565)
         else -> Color(0xFF4a5568)
@@ -316,7 +324,8 @@ fun ModernButton(
 
     Surface(
         modifier = modifier
-            .size(70.dp)
+            .fillMaxWidth()      // ocupa el ancho entregado por weight
+            .aspectRatio(1f)     // lo vuelve cuadrado (sin pelear con weight)
             .scale(scale)
             .shadow(
                 elevation = if (isPressed) 2.dp else 6.dp,
@@ -347,9 +356,7 @@ fun ModernButton(
         }
     }
 }
-}
 
-//Calculadora
 fun calcular(a: Double, b: Double, op: String): Double {
     return when (op) {
         "+" -> a + b
