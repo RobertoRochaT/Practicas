@@ -606,11 +606,12 @@ fun NFLApp() {
 
 @Composable
 fun ConferenceSelectionScreen(onConferenceSelected: (Conference) -> Unit) {
-    val backgroundBrush = remember {
+    val colorScheme = MaterialTheme.colorScheme
+    val backgroundBrush = remember(colorScheme) {
         Brush.verticalGradient(
             listOf(
-                MaterialTheme.colorScheme.surfaceVariant,
-                MaterialTheme.colorScheme.background
+                colorScheme.surfaceVariant,
+                colorScheme.background
             )
         )
     }
