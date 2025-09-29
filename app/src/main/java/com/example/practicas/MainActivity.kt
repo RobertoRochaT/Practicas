@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.align
+import androidx.compose.foundation.layout.BoxScope.align
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -723,6 +723,7 @@ fun PerformanceLineChart(data: List<Int>, label: String) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             val maxValue = (data.maxOrNull() ?: 0).coerceAtLeast(1)
+            val lineColor = MaterialTheme.colorScheme.primary
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val chartHeight = size.height
                 val chartWidth = size.width
@@ -741,7 +742,7 @@ fun PerformanceLineChart(data: List<Int>, label: String) {
 
                 drawPath(
                     path = path,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = lineColor,
                     style = Stroke(width = 6f)
                 )
 
@@ -749,7 +750,7 @@ fun PerformanceLineChart(data: List<Int>, label: String) {
                     val x = stepX * index
                     val y = chartHeight - (value / maxValue.toFloat()) * chartHeight
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = lineColor,
                         radius = 10f,
                         center = Offset(x, y)
                     )
@@ -770,6 +771,9 @@ fun RadarChart(metrics: Map<String, Float>) {
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             val entries = metrics.entries.toList()
+            val gridColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val fillColor = primaryColor.copy(alpha = 0.25f)
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val radius = size.minDimension / 2.5f
@@ -795,7 +799,7 @@ fun RadarChart(metrics: Map<String, Float>) {
                         gridPath.close()
                         drawPath(
                             path = gridPath,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f),
+                            color = gridColor,
                             style = Stroke(width = 2f)
                         )
                     }
@@ -814,7 +818,7 @@ fun RadarChart(metrics: Map<String, Float>) {
                             dataPath.lineTo(point.x, point.y)
                         }
                         drawCircle(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = primaryColor,
                             radius = 8f,
                             center = point
                         )
@@ -823,11 +827,11 @@ fun RadarChart(metrics: Map<String, Float>) {
 
                     drawPath(
                         path = dataPath,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                        color = fillColor
                     )
                     drawPath(
                         path = dataPath,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = primaryColor,
                         style = Stroke(width = 4f)
                     )
                 }
