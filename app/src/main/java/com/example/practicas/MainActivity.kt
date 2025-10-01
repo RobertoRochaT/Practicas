@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -1243,7 +1244,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun QuickActionButton(label: String, description: String, onClick: () -> Unit) {
+private fun RowScope.QuickActionButton(label: String, description: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .weight(1f)
