@@ -1,11 +1,11 @@
 package com.example.practicas
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,9 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.SportsFootball
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -1546,169 +1552,248 @@ fun HomeScreen(
     onNavigateToGoat: () -> Unit,
     onNavigateToStats: () -> Unit
 ) {
-    val isDark = isSystemInDarkTheme()
-    val gradient = remember(isDark) {
-        if (isDark) {
-            Brush.verticalGradient(listOf(Color(0xFF050B18), Color(0xFF0E1A32)))
-        } else {
-            Brush.verticalGradient(listOf(Color(0xFF0F1D35), Color(0xFF1F2F4A)))
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient)
-            .padding(24.dp)
+            .background(Color(0xFF040A18))
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(28.dp)) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = "NFL Atlas",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Explora conferencias, partidos, leyendas y datos en un lienzo oscuro inspirado en Apple Sports.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-                )
-            }
-
+        Column(modifier = Modifier.fillMaxSize()) {
+            HomeConferenceHalf(
+                conference = Conference.AFC,
+                largeLetter = "A",
+                letterAlignment = Alignment.CenterStart,
+                contentAlignment = Alignment.BottomStart,
+                onClick = { onConferenceSelected(Conference.AFC) }
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
-                    .clip(RoundedCornerShape(36.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(36.dp))
-            ) {
-                Column(Modifier.fillMaxSize()) {
-                    ConferenceHalf(
-                        conference = Conference.AFC,
-                        logoRes = R.drawable.afc,
-                        onClick = { onConferenceSelected(Conference.AFC) }
-                    )
-                    ConferenceHalf(
-                        conference = Conference.NFC,
-                        logoRes = R.drawable.nfc_logo,
-                        onClick = { onConferenceSelected(Conference.NFC) }
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .align(Alignment.Center)
-                        .clip(RoundedCornerShape(32.dp))
-                        .background(Color(0xFF0D1C2F))
-                        .border(3.dp, Color.White.copy(alpha = 0.4f), RoundedCornerShape(32.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.nfl),
-                        contentDescription = "NFL Shield",
-                        modifier = Modifier.size(80.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
-
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    text = "Atajos",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    QuickActionCard(
-                        title = "Partidos",
-                        subtitle = "Finales + próximos",
-                        icon = Icons.Default.SportsFootball,
-                        gradient = Brush.linearGradient(listOf(Color(0xFF15294B), Color(0xFF203E6B))),
-                        onClick = onNavigateToGames
-                    )
-                    QuickActionCard(
-                        title = "GOAT Charts",
-                        subtitle = "Jugadores & Equipos",
-                        icon = Icons.Default.EmojiEvents,
-                        gradient = Brush.linearGradient(listOf(Color(0xFF311F48), Color(0xFF472F6C))),
-                        onClick = onNavigateToGoat
-                    )
-                    QuickActionCard(
-                        title = "Stats",
-                        subtitle = "Passing • Defense",
-                        icon = Icons.Default.BarChart,
-                        gradient = Brush.linearGradient(listOf(Color(0xFF1C3A3A), Color(0xFF285050))),
-                        onClick = onNavigateToStats
-                    )
-                }
-            }
+                    .height(1.dp)
+                    .background(Color.White.copy(alpha = 0.12f))
+            )
+            HomeConferenceHalf(
+                conference = Conference.NFC,
+                largeLetter = "N",
+                letterAlignment = Alignment.CenterEnd,
+                contentAlignment = Alignment.TopStart,
+                onClick = { onConferenceSelected(Conference.NFC) }
+            )
         }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color.White.copy(alpha = 0.16f))
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(150.dp)
+                .shadow(24.dp, RoundedCornerShape(40.dp), clip = false)
+                .clip(RoundedCornerShape(40.dp))
+                .background(Color(0xFF0D1C2F))
+                .border(4.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(40.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.nfl),
+                contentDescription = "NFL Shield",
+                modifier = Modifier.size(92.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 64.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "NFL Atlas",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Black,
+                color = Color.White
+            )
+            Text(
+                text = "Explora conferencias, partidos históricos y estadísticas a un toque.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.82f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+        }
+
+        HomeBottomBar(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 32.dp, vertical = 32.dp),
+            onNavigateToGames = onNavigateToGames,
+            onNavigateToGoat = onNavigateToGoat,
+            onNavigateToStats = onNavigateToStats
+        )
     }
 }
 
 @Composable
-private fun ConferenceHalf(
+private fun HomeConferenceHalf(
     conference: Conference,
-    logoRes: Int,
+    largeLetter: String,
+    letterAlignment: Alignment,
+    contentAlignment: Alignment,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .weight(1f)
             .fillMaxWidth()
-            .background(Brush.linearGradient(listOf(conference.accent, conference.secondary)))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+            .clickable(onClick = onClick)
     ) {
-        Image(
-            painter = painterResource(id = logoRes),
-            contentDescription = conference.displayName,
-            modifier = Modifier.size(150.dp),
-            contentScale = ContentScale.Fit
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = if (conference == Conference.AFC) {
+                            listOf(conference.accent, conference.accent.copy(alpha = 0.9f), conference.secondary)
+                        } else {
+                            listOf(conference.secondary, conference.accent.copy(alpha = 0.9f), conference.accent)
+                        }
+                    )
+                )
         )
+
+        Text(
+            text = largeLetter,
+            fontWeight = FontWeight.Black,
+            fontSize = 220.sp,
+            color = Color.White.copy(alpha = 0.08f),
+            modifier = Modifier
+                .align(letterAlignment)
+                .padding(horizontal = 32.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .align(contentAlignment)
+                .padding(horizontal = 32.dp, vertical = 36.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = conference.shortName,
+                fontWeight = FontWeight.Black,
+                fontSize = 32.sp,
+                color = Color.White
+            )
+            Text(
+                text = conference.displayName,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.85f)
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Ver equipos",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.85f)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.85f),
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun QuickActionCard(
-    title: String,
-    subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    gradient: Brush,
-    onClick: () -> Unit
+private fun HomeBottomBar(
+    modifier: Modifier = Modifier,
+    onNavigateToGames: () -> Unit,
+    onNavigateToGoat: () -> Unit,
+    onNavigateToStats: () -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .weight(1f)
-            .clip(RoundedCornerShape(24.dp))
-            .clickable(onClick = onClick),
-        color = Color.Transparent
+        modifier = modifier,
+        shape = RoundedCornerShape(32.dp),
+        color = Color.White.copy(alpha = 0.08f),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.18f))
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HomeBottomBarItem(
+                modifier = Modifier.weight(1f),
+                label = "Partidos",
+                icon = Icons.Default.SportsFootball,
+                selected = true,
+                onClick = onNavigateToGames
+            )
+            HomeBottomBarItem(
+                modifier = Modifier.weight(1f),
+                label = "GOAT Charts",
+                icon = Icons.Default.EmojiEvents,
+                selected = false,
+                onClick = onNavigateToGoat
+            )
+            HomeBottomBarItem(
+                modifier = Modifier.weight(1f),
+                label = "Stats",
+                icon = Icons.Default.BarChart,
+                selected = false,
+                onClick = onNavigateToStats
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeBottomBarItem(
+    modifier: Modifier = Modifier,
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = if (selected) Color.White else Color.White.copy(alpha = 0.65f),
+            modifier = Modifier.size(26.dp)
+        )
+        Text(
+            text = label,
+            color = if (selected) Color.White else Color.White.copy(alpha = 0.75f),
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            fontSize = 13.sp
+        )
         Box(
             modifier = Modifier
-                .background(gradient)
-                .padding(18.dp)
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White.copy(alpha = 0.18f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = icon, contentDescription = null, tint = Color.White)
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(text = title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.7f)
-                    )
-                }
-            }
-        }
+                .width(28.dp)
+                .height(3.dp)
+                .clip(CircleShape)
+                .background(if (selected) Color.White else Color.Transparent)
+        )
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -2185,87 +2270,247 @@ fun GameDetailScreen(game: Game, homeTeam: Team, awayTeam: Team, onBack: () -> U
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Box(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(36.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(awayTeam.primaryColor, homeTeam.primaryColor)
-                        )
-                    )
-                    .padding(vertical = 32.dp, horizontal = 24.dp)
+                    .clip(RoundedCornerShape(40.dp)),
+                color = Color.Transparent
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        TeamLogo(team = awayTeam, size = 72.dp)
-                        Text(text = awayTeam.abbreviation, color = awayTeam.textColor, fontWeight = FontWeight.SemiBold)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(text = "VS", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Text(
-                            text = if (game.status == GameStatus.Final) "${game.homeScore} - ${game.awayScore}" else "${awayTeam.abbreviation} vs ${homeTeam.abbreviation}",
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Black
+                Box(
+                    modifier = Modifier
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(awayTeam.primaryColor, homeTeam.primaryColor)
+                            )
                         )
-                        Text(text = game.date, color = Color.White.copy(alpha = 0.75f))
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        TeamLogo(team = homeTeam, size = 72.dp)
-                        Text(text = homeTeam.abbreviation, color = homeTeam.textColor, fontWeight = FontWeight.SemiBold)
+                        .padding(vertical = 32.dp, horizontal = 24.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            MatchupTeamColumn(team = awayTeam, textAlign = TextAlign.Start)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                GameStatusBadge(status = game.status)
+                                Text(
+                                    text = if (game.status == GameStatus.Final && game.homeScore != null && game.awayScore != null) {
+                                        "${game.awayScore} - ${game.homeScore}"
+                                    } else {
+                                        "${awayTeam.abbreviation} @ ${homeTeam.abbreviation}"
+                                    },
+                                    fontSize = 36.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = game.date,
+                                    color = Color.White.copy(alpha = 0.82f),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            MatchupTeamColumn(team = homeTeam, textAlign = TextAlign.End)
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            GameMetaChip(icon = Icons.Default.Place, label = game.venue)
+                            GameMetaChip(
+                                icon = Icons.Default.Flag,
+                                label = "${awayTeam.conference.shortName} vs ${homeTeam.conference.shortName}"
+                            )
+                            GameMetaChip(icon = Icons.Default.TrendingUp, label = game.odds)
+                        }
                     }
                 }
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(text = "Info del juego", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                GameInfoRow(label = "Venue", value = game.venue)
-                GameInfoRow(label = "Récord", value = game.record)
-                GameInfoRow(label = "Odds", value = game.odds)
+                Text(text = "Claves del partido", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                GameInsightCard(
+                    icon = Icons.Default.BarChart,
+                    title = "Récord combinado",
+                    description = game.record
+                )
+                GameInsightCard(
+                    icon = Icons.Default.Home,
+                    title = "Factor local",
+                    description = "${homeTeam.city} ${homeTeam.name} reciben a ${awayTeam.city} ${awayTeam.name} en ${game.venue}."
+                )
+                GameInsightCard(
+                    icon = Icons.Default.TrendingUp,
+                    title = "Mercado de apuestas",
+                    description = "El pronóstico marca ${game.odds}, destacando la expectativa del mercado."
+                )
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(text = "Standings divisionales", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                DivisionStandingsBlock(team = homeTeam, label = "${homeTeam.conference.shortName} contender")
-                DivisionStandingsBlock(team = awayTeam, label = "${awayTeam.conference.shortName} challenger")
+                Text(text = "Ritmo divisional", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    DivisionStandingsBlock(
+                        team = awayTeam,
+                        label = "${awayTeam.conference.shortName} challenger",
+                        modifier = Modifier.weight(1f)
+                    )
+                    DivisionStandingsBlock(
+                        team = homeTeam,
+                        label = "${homeTeam.conference.shortName} contender",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun GameInfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+private fun GameStatusBadge(status: GameStatus) {
+    val (label, background) = when (status) {
+        GameStatus.Final -> "Finalizado" to Color(0xFF0B7285)
+        GameStatus.Upcoming -> "Próximo" to Color(0xFFD97706)
+    }
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(background.copy(alpha = 0.9f))
+            .padding(horizontal = 14.dp, vertical = 6.dp)
     ) {
-        Text(text = label, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
-        Text(text = value, fontWeight = FontWeight.SemiBold)
+        Text(
+            text = label.uppercase(),
+            color = Color.White,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
 @Composable
-private fun DivisionStandingsBlock(team: Team, label: String) {
+private fun MatchupTeamColumn(team: Team, textAlign: TextAlign) {
+    Column(
+        horizontalAlignment = if (textAlign == TextAlign.End) Alignment.End else Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        TeamLogo(team = team, size = 78.dp)
+        Text(
+            text = team.city,
+            color = Color.White.copy(alpha = 0.82f),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = textAlign
+        )
+        Text(
+            text = team.name,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            textAlign = textAlign
+        )
+    }
+}
+
+@Composable
+private fun GameMetaChip(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = Color.White.copy(alpha = 0.14f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+            Text(text = label, color = Color.White, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
+private fun GameInsightCard(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, description: String) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp)),
-        color = Color.Transparent
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
     ) {
-        Column(
-            modifier = Modifier
-                .background(Brush.linearGradient(listOf(team.primaryColor.copy(alpha = 0.8f), team.secondaryColor.copy(alpha = 0.6f))))
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = label, color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(text = title, fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DivisionStandingsBlock(team: Team, label: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(28.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(team.primaryColor.copy(alpha = 0.92f), team.secondaryColor.copy(alpha = 0.85f))
+                )
+            )
+            .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(28.dp))
+            .padding(20.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.85f),
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(text = label, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
+            }
+            TeamLogo(team = team, size = 72.dp)
             Text(text = "${team.city} ${team.name}", color = Color.White, fontWeight = FontWeight.SemiBold)
-            Text(text = "Últimos 5: 4-1", color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = team.conference.displayName,
+                color = Color.White.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Momentum: 4-1 en los últimos 5.",
+                color = Color.White.copy(alpha = 0.78f),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
